@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Mnet Video Saver</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#151f33;--line:#2b3a56;--muted:#a5b2c8;--accent:#6f8cff}
+*{box-sizing:border-box}body{margin:0;padding:24px 16px calc(28px + env(safe-area-inset-bottom));background:var(--bg);color:#f5f7ff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+main{max-width:520px;margin:auto}.head{text-align:center;padding:26px 8px}.logo{width:52px;height:52px;border-radius:17px;background:#6f8cff;display:grid;place-items:center;margin:0 auto 13px;font-size:24px}h1{font-size:23px;margin:0 0 6px}.muted{color:var(--muted);font-size:13px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px}
+label{display:block;font-weight:650;font-size:13px;margin-bottom:9px}
+input{width:100%;padding:14px;border:1px solid #405071;border-radius:12px;background:#0d1628;color:white;font:inherit;font-size:14px}
+button{width:100%;border:0;border-radius:12px;padding:14px;background:var(--accent);color:white;font-weight:700;font-size:14px;margin-top:10px}
+button.secondary{background:#263550;border:1px solid #405071}
+.result{background:#0d1628;border:1px solid #34435f;border-radius:12px;padding:12px;margin-top:12px;font-size:13px;overflow-wrap:anywhere}
+.note{font-size:12px;line-height:1.65;color:#c4cee0}
+a{color:#b8c7ff}.hidden{display:none}
+</style>
+</head>
+<body><main>
+<header class="head"><div class="logo">▶</div><h1>Mnet Video Saver</h1><div class="muted">갤럭시 모바일 웹앱 · 2차 테스트</div></header>
+<section class="card">
+<label for="url">Mnet Plus 게시물 주소</label>
+<input id="url" type="url" inputmode="url" value="https://artist.mnetplus.world/main/stg/hrtzwav/story/feed/6aee056d1150e57a41f607c3" placeholder="게시물 URL 붙여넣기">
+<button id="check">게시물 ID 확인</button>
+<div id="result" class="result hidden"></div>
+<button id="open" class="secondary">Chrome에서 게시물 열기</button>
+</section>
+<section class="card">
+<div class="note"><b>현재 테스트 범위</b><br>• 게시물 URL 인식 및 ID 추출<br>• Mnet Plus 게시물 열기<br>• 홈 화면 설치형 웹앱(PWA) 기본 구조<br><br>이 버전은 Mnet Plus 로그인 세션이나 재생 스트림에 접근하지 않으며, 영상 추출·재구성 기능은 포함하지 않습니다. 영상 저장은 플랫폼의 공식 다운로드 기능 또는 사용 권한이 있는 파일을 통해서만 연결할 수 있습니다.</div>
+</section>
+<section class="card">
+<div class="note"><b>홈 화면에 추가</b><br>배포된 HTTPS 주소를 Chrome으로 연 뒤 오른쪽 위 ⋮ 메뉴에서 <b>앱 설치</b> 또는 <b>홈 화면에 추가</b>를 선택하면 앱처럼 실행할 수 있습니다.</div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);let postId="";
+function parse(){
+ try{
+  const u=new URL($("url").value.trim());const id=u.pathname.split("/").filter(Boolean).at(-1);
+  if(!/^[a-zA-Z0-9_-]{6,}$/.test(id))throw Error("게시물 ID를 찾지 못했어요.");
+  postId=id;$("result").textContent=`게시물 ID: ${id} · 파일명 기준: ${id}.mp4`;$("result").classList.remove("hidden");
+ }catch(e){postId="";$("result").textContent=e.message||"올바른 URL을 입력해 주세요.";$("result").classList.remove("hidden")}
+}
+$("check").addEventListener("click",parse);
+$("open").addEventListener("click",()=>{try{const u=new URL($("url").value.trim());if(!/^https:\/\/(artist\.)?mnetplus\.world$/.test(u.origin))throw Error();location.href=u.href}catch(e){alert("유효한 Mnet Plus 게시물 주소를 입력해 주세요.")}});
+if("serviceWorker" in navigator && location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js").catch(()=>{});
+parse();
+</script></body></html>

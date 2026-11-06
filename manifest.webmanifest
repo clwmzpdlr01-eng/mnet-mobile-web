@@ -1,0 +1,9 @@
+{
+  "name": "Mnet Video Saver",
+  "short_name": "Mnet Saver",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#101827",
+  "description": "Mnet Plus 게시물 URL 확인용 모바일 웹앱"
+}
