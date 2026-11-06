@@ -61,11 +61,55 @@ placeholder="게시물 URL 붙여넣기">
 이 테스트는 페이지 접근만 확인하며 영상 스트림 접근이나 추출 가능 여부를 증명하지는 않아.
 </div>
 </section>
+ 
+<section class="card">
+  <b>영상 조각 파일 확인</b>
+  <div class="note">
+    직접 선택한 영상·오디오 조각 파일의 목록과 용량을 확인합니다.
+  </div>
+
+  <input
+    id="segments"
+    type="file"
+    multiple
+    accept=".mp4,.m4s,.mpd,.m4a"
+    style="margin-top:12px"
+  >
+
+  <button id="scan">선택한 파일 확인</button>
+  <div id="segmentResult" class="result hidden"></div>
+</section>
+
 </main>
 
 <script>
 const $=id=>document.getElementById(id);
 let postId="";
+
+$("scan").addEventListener("click",()=>{
+  const files=[...$("segments").files];
+  const out=$("segmentResult");
+
+  out.classList.remove("hidden");
+
+  if(!files.length){
+    out.textContent="선택된 파일이 없습니다.";
+    return;
+  }
+
+  const total=files.reduce((sum,f)=>sum+f.size,0);
+  const video=files.filter(f=>/video|orivideo/i.test(f.name));
+  const audio=files.filter(f=>/audio|oriaudio/i.test(f.name));
+
+  const size=n=>(n/1024/1024).toFixed(2)+" MB";
+
+  out.textContent=
+    `전체 파일: ${files.length}개\n`+
+    `영상 관련 파일명: ${video.length}개\n`+
+    `오디오 관련 파일명: ${audio.length}개\n`+
+    `전체 용량: ${size(total)}\n\n`+
+    files.map(f=>`${f.name} (${size(f.size)})`).join("\n");
+});
 
 function parse(){
  try{
